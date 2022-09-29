@@ -15,37 +15,28 @@ public class PFPanel extends JPanel {
     private PathFindingAlgo algorithm;
     private java.util.ArrayList<Pair> colorLegend;
 
-    
-    private int[][] initialState;
+    private int edgeWidth;
     private int[] currCell;
-    private int[] startCell;
-    private int[] endCell;
     private Rectangle panelDimensions;
     private Point mousePos;
     private int cellsize;
 
-    // Variables for controlling the pathfinding algorithm
-    private final int STRAIGHT_COST = 10, DIAGONAL_COST = 14;
-
-    private PFDriver driver;
     private PFMouseListener mouseListener;
 
 
-    public PFPanel(PFDriver driver, int pW, int pH)
+    public PFPanel(int pW, int pH)
     {
         // Debugging
         this.EventLog = new ArrayList<String>();
         this.history = 20;
         this.showDebug = true;
         
-        this.driver = driver;
         this.mousePos = new Point();
         // Rendering
         this.currCell = new int[]{0,0};
-        this.startCell = new int[]{0,0};
-        this.endCell = new int[]{0,0};
         this.panelDimensions = new Rectangle(this.getX(), this.getY(), pW, pH);
         this.cellsize = 50;
+        this.edgeWidth = 2;
         
         // Algorithm
         clearinitialState();
@@ -60,16 +51,16 @@ public class PFPanel extends JPanel {
     private void clearinitialState()
     {
         initState = new InitialState(panelDimensions.width / cellsize - 3, panelDimensions.height / cellsize);
-        panelDimensions.setSize(initialState.length * cellsize, initialState[0].length * cellsize);
+        panelDimensions.setSize(initState.width * cellsize, initState.height * cellsize);
     }
 
     private void renderInitState(Graphics g)
     {
-        for (int i = 0; i < initState.getWidth(); i++)
-            for (int j = 0; j < initState.getHeight(); j++)
+        for (int i = 0; i < initState.width; i++)
+            for (int j = 0; j < initState.height; j++)
             {
-                g.setColor(initState.getCell(i, j).getColor());
-                g.fillRect(i * cellsize, j * cellsize, cellsize, cellsize);
+                g.setColor(initState.colorKey.get(initState.state[i][j]).getColor());
+                g.fillRect(i * cellsize + edgeWidth, j * cellsize + edgeWidth, cellsize - 2 * edgeWidth, cellsize - 2 * edgeWidth);
             }
     }
 
@@ -87,10 +78,7 @@ public class PFPanel extends JPanel {
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        // draw start and end cell
 
-        // draw the rest of the cells
-        // draw the current cell
         if (runningAlgo)
             this.renderAlgo(g);
         else
@@ -107,19 +95,17 @@ public class PFPanel extends JPanel {
 
     public void keyPressed(int code)
     {
-        if (!runningAlgo)
-        {
+        //if (!runningAlgo)
+        //{
             switch (code)
             {
                 case KeyEvent.VK_1:
                 EventLog.add("One Key Pressed! Setting Start Point!");
-                startCell[0] = currCell[0];
-                startCell[1] = currCell[1];
+                initState.setStart(currCell[0], currCell[1]);
                 break;
                 case KeyEvent.VK_2:
                 EventLog.add("Two Key Pressed! Setting End Point!");
-                endCell[0] = currCell[0];
-                endCell[1] = currCell[1];
+                initState.setEnd(currCell[0], currCell[1]);
                 break;
                 case KeyEvent.VK_B:
                 showDebug = !showDebug;
@@ -131,11 +117,11 @@ public class PFPanel extends JPanel {
                 
             }
             repaint();
-        }
-        else
-        {
+        //}
+        //else
+        //{
 
-        }
+        //}
             
     }
 
@@ -145,28 +131,31 @@ public class PFPanel extends JPanel {
         public boolean rightClicked;
 
         @Override
-    public void mouseDragged(java.awt.event.MouseEvent e) {        
-    }
+        public void mouseDragged(java.awt.event.MouseEvent e) {        
+        }
 
-    @Override
-    public void mouseMoved(java.awt.event.MouseEvent e) {
-        
-        mousePos = MouseInfo.getPointerInfo().getLocation();
-        if (panelDimensions.contains(mousePos))
-        {
-            currCell[0] = (int)(mousePos.getX() / cellsize);
-            currCell[1] = (int)(mousePos.getY() / cellsize);
+        @Override
+        public void mouseMoved(java.awt.event.MouseEvent e) {
+            
+            // Gets the absolute mouse position: MouseInfo.getPointerInfo().getLocation();
+            mousePos.x = e.getX(); 
+            mousePos.y = e.getY();
+
+            if (panelDimensions.contains(mousePos))
+            {
+                currCell[0] = (int)(mousePos.getX() / cellsize);
+                currCell[1] = (int)(mousePos.getY() / cellsize);
+            }
+            if (mouseListener.leftClicked)
+            {
+                initState.state[currCell[0]][currCell[1]] = 1;
+            }
+            if (mouseListener.rightClicked)
+            {
+                initState.state[currCell[0]][currCell[1]] = 0;
+            }
+            repaint();
         }
-        if (mouseListener.leftClicked)
-        {
-            initialState[currCell[0]][currCell[1]] = 1;
-        }
-        if (mouseListener.rightClicked)
-        {
-            initialState[currCell[0]][currCell[1]] = 0;
-        }
-        repaint();
-    }
 
         @Override
         public void mousePressed(java.awt.event.MouseEvent e) {
@@ -174,12 +163,12 @@ public class PFPanel extends JPanel {
             {
                 case java.awt.event.MouseEvent.BUTTON1:
                 EventLog.add("Mouse One Pressed!");
-                initialState[currCell[0]][currCell[1]] = 1;
+                initState.state[currCell[0]][currCell[1]] = 1;
                 this.leftClicked = true;
                 break;
                 case java.awt.event.MouseEvent.BUTTON3:
                 EventLog.add("Mouse Three Pressed!");
-                initialState[currCell[0]][currCell[1]] = 0;
+                initState.state[currCell[0]][currCell[1]] = 0;
                 this.rightClicked = true;
                 break;
             } 
@@ -207,7 +196,7 @@ public class PFPanel extends JPanel {
 
         @Override
         public void mouseExited(java.awt.event.MouseEvent e) {}
+    
     }
-
 
 }

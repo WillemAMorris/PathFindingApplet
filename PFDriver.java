@@ -17,23 +17,34 @@ public class PFDriver extends JFrame
         this.paused = false;
         this.setSize(width, height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setExtendedState(JFrame.NORMAL);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setUndecorated(true);
         this.setResizable(true);
         PFKeyListener keyListener = new PFKeyListener();
         this.addKeyListener(keyListener);
         // Set-up options panel
         JPanel options = new JPanel();
+        options.setSize(this.width, 50);
         options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+        /*
+         * - Algorithm drop down menu
+         * - Run button
+         * - pause/play button
+         * - Reset/Clear button
+         * - step forward button
+         * - step backward button
+         */
+        options.add(new JButton("Test"));
         options.addKeyListener(keyListener);
+        System.out.println("Option Dimensions: " + options.getWidth() + " by " + options.getHeight());
 
         // Set-up PFPanel
-        pathfindingPanel = new PFPanel(this, this.width - options.getWidth(), this.height);
+        pathfindingPanel = new PFPanel(this.width, this.height - options.getHeight());
         pathfindingPanel.addKeyListener(keyListener);
 
         // Set-up main panel
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(pathfindingPanel);
         mainPanel.add(options);
         mainPanel.addKeyListener(keyListener);

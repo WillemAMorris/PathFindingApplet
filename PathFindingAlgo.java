@@ -1,5 +1,3 @@
-import java.awt.Color;
-
 public abstract class PathFindingAlgo {
     protected java.util.Stack<int[][]> history;
     protected int[][] currState;
@@ -8,10 +6,10 @@ public abstract class PathFindingAlgo {
     protected int[] endCell;
 
     public PathFindingAlgo(InitialState init){
-        this.currState = init.getState();
-        this.colorKey = init.getColorKey();
-        this.startCell = init.getStart();
-        this.endCell = init.getEnd();
+        this.currState = init.state;
+        this.colorKey = init.colorKey;
+        this.startCell = init.start;
+        this.endCell = init.end;
         this.history = new java.util.Stack<int[][]>();
         this.history.push(this.currState);
     }

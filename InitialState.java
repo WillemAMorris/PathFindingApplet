@@ -1,12 +1,13 @@
 import java.awt.Color;
 
 public class InitialState {
-    private int[][] state;
-    private boolean startInit;
-    private int[] start;
-    private boolean endInit;
-    private int[] end;
-    private java.util.ArrayList<Pair> colorKey;
+    public int[][] state;
+    public int width, height;
+    public boolean startInit;
+    public int[] start;
+    public boolean endInit;
+    public int[] end;
+    public java.util.ArrayList<Pair> colorKey;
 
     public InitialState(int width, int height)
     {
@@ -16,6 +17,8 @@ public class InitialState {
         colorKey.add(new Pair("START", Color.GREEN)); 
         colorKey.add(new Pair("END", Color.RED));
 
+        this.width = width;
+        this.height = height;
         this.state = new int[width][height];
         this.startInit = false;
         this.start = new int[2];
