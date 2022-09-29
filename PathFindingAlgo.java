@@ -1,7 +1,7 @@
 public abstract class PathFindingAlgo {
     protected java.util.ArrayList<int[][]> history;
     protected int currState;
-    public java.util.ArrayList<Pair> colorKey;
+    protected java.util.ArrayList<Pair> colorKey;
     protected int[] startCell;
     protected int[] endCell;
 
@@ -32,6 +32,10 @@ public abstract class PathFindingAlgo {
 
     public int[][] getState() {
         return history.get(currState);
+    }
+
+    public java.util.ArrayList<Pair> getColorKey() {
+        return colorKey;
     }
 
     abstract void update();

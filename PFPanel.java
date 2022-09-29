@@ -65,13 +65,14 @@ public class PFPanel extends JPanel {
 
     private void renderAlgo(Graphics g)
     {
-        /*int[][] board = algorithm.getState();
+        int[][] board = algorithm.getState();
+        ArrayList<Pair> key = algorithm.getColorKey();
         for (int i = 0; i < board.length; i++)
             for (int j = 0; j < board[0].length; j++)
             {
-                g.setColor(algorithm.colorKey.get(board[i][j]).getColor());
+                g.setColor(key.get(board[i][j]).getColor());
                 g.fillRect(i * cellsize + edgeWidth, j * cellsize + edgeWidth, cellsize - 2 * edgeWidth, cellsize - 2 * edgeWidth);
-            }*/
+            }
     }
 
     public void paintComponent(Graphics g)
@@ -127,7 +128,8 @@ public class PFPanel extends JPanel {
         switch(algoName)
         {
             case "A-Star":
-            break;
+                algorithm = new AStar(initState);
+                break;
         }
     }
 
