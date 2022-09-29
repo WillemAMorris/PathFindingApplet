@@ -3,9 +3,7 @@ import java.awt.Color;
 public class InitialState {
     public int[][] state;
     public int width, height;
-    public boolean startInit;
     public int[] start;
-    public boolean endInit;
     public int[] end;
     public java.util.ArrayList<Pair> colorKey;
 
@@ -39,10 +37,6 @@ public class InitialState {
     public void setStart(int x, int y)
     {
         this.setEmpty(start[0], start[1]);
-        /* if (end[0] == x && end[1] == y) {
-            end[0] = -1;
-            end[1] = -1;
-        } */
         this.state[x][y] = 2;
         this.start[0] = x;
         this.start[1] = y;
@@ -50,15 +44,7 @@ public class InitialState {
 
     public void setEnd(int x, int y)
     {
-        // set previous square to empty
-        // if sq is start, unset start
-        // set state[x][y] to 3
-        // set end to x and y
         this.setEmpty(end[0], end[1]);
-        /* if (start[0] == x && start[1] == y) {
-            start[0] = -1;
-            start[1] = -1;
-        } */
         this.state[x][y] = 3;
         this.end[0] = x;
         this.end[1] = y;
@@ -101,6 +87,6 @@ public class InitialState {
 
     public boolean readyToSend()
     {
-        return (startInit && endInit);
+        return (start[0] != -1 && start[1] != -1 && end[0] != -1 && end[1] != -1);
     }
 }

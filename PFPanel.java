@@ -13,7 +13,6 @@ public class PFPanel extends JPanel {
     private boolean runningAlgo;
     private InitialState initState;
     private PathFindingAlgo algorithm;
-    private java.util.ArrayList<Pair> colorLegend;
 
     private int edgeWidth;
     private int[] currCell;
@@ -66,13 +65,13 @@ public class PFPanel extends JPanel {
 
     private void renderAlgo(Graphics g)
     {
-        int[][] board = algorithm.getState();
+        /*int[][] board = algorithm.getState();
         for (int i = 0; i < board.length; i++)
             for (int j = 0; j < board[0].length; j++)
             {
-                g.setColor(colorLegend.get(board[i][j]).getColor());
+                g.setColor(algorithm.colorKey.get(board[i][j]).getColor());
                 g.fillRect(i * cellsize + edgeWidth, j * cellsize + edgeWidth, cellsize - 2 * edgeWidth, cellsize - 2 * edgeWidth);
-            }
+            }*/
     }
 
     public void paintComponent(Graphics g)
@@ -110,11 +109,6 @@ public class PFPanel extends JPanel {
                 case KeyEvent.VK_B:
                     showDebug = !showDebug;
                     break;
-                case KeyEvent.VK_R:
-                    runningAlgo = true;
-                    // Pass initState to algorithm constructor based on field in algorithm option
-                    break;
-                
             }
             repaint();
         }
@@ -123,6 +117,18 @@ public class PFPanel extends JPanel {
 
         }
             
+    }
+
+    public void runAlgo(String algoName)
+    {
+        EventLog.add("Running Path Finding Algorithm: " + algoName);
+        runningAlgo = true;
+        // Initialize algorithm
+        switch(algoName)
+        {
+            case "A-Star":
+            break;
+        }
     }
 
     private class PFMouseListener implements MouseListener, MouseMotionListener

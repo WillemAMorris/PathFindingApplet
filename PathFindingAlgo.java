@@ -1,34 +1,38 @@
 public abstract class PathFindingAlgo {
-    protected java.util.Stack<int[][]> history;
-    protected int[][] currState;
-    protected java.util.ArrayList<Pair> colorKey;
+    protected java.util.ArrayList<int[][]> history;
+    protected int currState;
+    public java.util.ArrayList<Pair> colorKey;
     protected int[] startCell;
     protected int[] endCell;
 
     public PathFindingAlgo(InitialState init){
-        this.currState = init.state;
+        this.currState = 0;
         this.colorKey = init.colorKey;
         this.startCell = init.start;
         this.endCell = init.end;
-        this.history = new java.util.Stack<int[][]>();
-        this.history.push(this.currState);
+        this.history = new java.util.ArrayList<int[][]>();
+        this.history.add(init.state);
     }
     public void rewindState() 
     { 
-        currState = history.pop(); 
-    }
-    protected void setCellState(int x, int y, int color)
-    {
-        currState[x][y] = color;
+        if (currState > 0)
+            --currState; 
     }
 
-    public java.util.ArrayList<Pair> getColorKey() {
-        return colorKey;
+    public void advanceState()
+    {
+        if (currState < history.size() - 1)
+            ++currState;
+    }
+
+    protected void setCellState(int x, int y, int color)
+    {
+        history.get(currState)[x][y] = color;
     }
 
     public int[][] getState() {
-        return currState;
+        return history.get(currState);
     }
 
-    abstract void algoRun();
+    abstract void update();
 }
