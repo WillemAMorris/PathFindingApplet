@@ -39,7 +39,7 @@ public class PFDriver extends JFrame
          * - step backward button
          */
         JButton runButton = new JButton("Run");
-        runButton.addActionListener(e -> pathfindingPanel.runAlgo("Test Name"));
+        runButton.addActionListener(e -> pathfindingPanel.runAlgo("A-Star"));
         //runButton.setMargin(new java.awt.Insets(5,5,5,5));
         runButton.setAlignmentY(Component.CENTER_ALIGNMENT);
         runButton.setAlignmentX(Component.LEFT_ALIGNMENT);

@@ -1,11 +1,11 @@
 import java.awt.Color;
 
 public class InitialState {
-    public int[][] state;
-    public int width, height;
-    public int[] start;
-    public int[] end;
-    public java.util.ArrayList<Pair> colorKey;
+    private int[][] state;
+    private int width, height;
+    private int[] start;
+    private int[] end;
+    private java.util.ArrayList<Pair> colorKey;
 
     public InitialState(int width, int height)
     {
@@ -62,12 +62,12 @@ public class InitialState {
 
     public int getWidth()
     {
-        return state.length;
+        return width;
     }
 
     public int getHeight()
     {
-        return state[0].length;
+        return height;
     }
 
     public int[][] getState()

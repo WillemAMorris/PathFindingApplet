@@ -7,11 +7,11 @@ public abstract class PathFindingAlgo {
 
     public PathFindingAlgo(InitialState init){
         this.currState = 0;
-        this.colorKey = init.colorKey;
-        this.startCell = init.start;
-        this.endCell = init.end;
+        this.colorKey = init.getColorKey();
+        this.startCell = init.getStart();
+        this.endCell = init.getEnd();
         this.history = new java.util.ArrayList<int[][]>();
-        this.history.add(init.state);
+        this.history.add(init.getState());
     }
     public void rewindState() 
     { 

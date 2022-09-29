@@ -38,7 +38,7 @@ public class PFPanel extends JPanel {
         this.edgeWidth = 2;
         
         // Algorithm
-        clearinitialState();
+        clearInitialState();
         this.runningAlgo = false;
 
 
@@ -47,18 +47,20 @@ public class PFPanel extends JPanel {
         addMouseMotionListener(mouseListener);
     }
 
-    private void clearinitialState()
+    private void clearInitialState()
     {
         initState = new InitialState(panelDimensions.width / cellsize, panelDimensions.height / cellsize);
-        panelDimensions.setSize(initState.width * cellsize, initState.height * cellsize);
+        panelDimensions.setSize(initState.getWidth() * cellsize, initState.getHeight() * cellsize);
     }
 
     private void renderInitState(Graphics g)
     {
-        for (int i = 0; i < initState.width; i++)
-            for (int j = 0; j < initState.height; j++)
+        int[][] board = initState.getState();
+        ArrayList<Pair> key = initState.getColorKey();
+        for (int i = 0; i < board.length; i++)
+            for (int j = 0; j < board[0].length; j++)
             {
-                g.setColor(initState.colorKey.get(initState.state[i][j]).getColor());
+                g.setColor(key.get(board[i][j]).getColor());
                 g.fillRect(i * cellsize + edgeWidth, j * cellsize + edgeWidth, cellsize - 2 * edgeWidth, cellsize - 2 * edgeWidth);
             }
     }
@@ -156,11 +158,11 @@ public class PFPanel extends JPanel {
             }
             if (mouseListener.leftClicked)
             {
-                initState.state[currCell[0]][currCell[1]] = 1;
+                initState.setWall(currCell[0], currCell[1]);
             }
             if (mouseListener.rightClicked)
             {
-                initState.state[currCell[0]][currCell[1]] = 0;
+                initState.setEmpty(currCell[0], currCell[1]);
             }
             repaint();
         }
@@ -171,12 +173,12 @@ public class PFPanel extends JPanel {
             {
                 case java.awt.event.MouseEvent.BUTTON1:
                 EventLog.add("Mouse One Pressed!");
-                initState.state[currCell[0]][currCell[1]] = 1;
+                initState.setWall(currCell[0], currCell[1]);
                 this.leftClicked = true;
                 break;
                 case java.awt.event.MouseEvent.BUTTON3:
                 EventLog.add("Mouse Three Pressed!");
-                initState.state[currCell[0]][currCell[1]] = 0;
+                initState.setEmpty(currCell[0], currCell[1]);
                 this.rightClicked = true;
                 break;
             } 

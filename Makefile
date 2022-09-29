@@ -1,8 +1,6 @@
 JC = javac
 JV = java
 
-all: clean compile run
-
 run: 
 	$(JV) PFDriver.java
 
@@ -11,3 +9,7 @@ compile:
 
 clean:
 	$(RM) *.class
+
+recompile: clean compile
+
+all: clean compile run
