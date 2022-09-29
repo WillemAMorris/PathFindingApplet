@@ -24,8 +24,8 @@ public class PFDriver extends JFrame
         this.addKeyListener(keyListener);
         // Set-up options panel
         JPanel options = new JPanel();
-        options.setSize(this.width, 50);
-        options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+        options.setBounds(0,0, this.width, 60);
+        options.setLayout(new BoxLayout(options, BoxLayout.X_AXIS));
         /*
          * - Algorithm drop down menu
          * - Run button
@@ -34,9 +34,15 @@ public class PFDriver extends JFrame
          * - step forward button
          * - step backward button
          */
-        options.add(new JButton("Test"));
+        JButton runButton = new JButton("Run");
+        //runButton.setMargin(new java.awt.Insets(5,5,5,5));
+        runButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+        runButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        runButton.addKeyListener(keyListener);
+        options.add(runButton);
+        options.add(Box.createRigidArea(new Dimension(10,0)));
+        options.add(new JButton("Clear"));
         options.addKeyListener(keyListener);
-        System.out.println("Option Dimensions: " + options.getWidth() + " by " + options.getHeight());
 
         // Set-up PFPanel
         pathfindingPanel = new PFPanel(this.width, this.height - options.getHeight());

@@ -35,7 +35,7 @@ public class PFPanel extends JPanel {
         // Rendering
         this.currCell = new int[]{0,0};
         this.panelDimensions = new Rectangle(this.getX(), this.getY(), pW, pH);
-        this.cellsize = 50;
+        this.cellsize = 40;
         this.edgeWidth = 2;
         
         // Algorithm
@@ -50,7 +50,7 @@ public class PFPanel extends JPanel {
 
     private void clearinitialState()
     {
-        initState = new InitialState(panelDimensions.width / cellsize - 3, panelDimensions.height / cellsize);
+        initState = new InitialState(panelDimensions.width / cellsize, panelDimensions.height / cellsize);
         panelDimensions.setSize(initState.width * cellsize, initState.height * cellsize);
     }
 
@@ -71,7 +71,7 @@ public class PFPanel extends JPanel {
             for (int j = 0; j < board[0].length; j++)
             {
                 g.setColor(colorLegend.get(board[i][j]).getColor());
-                g.fillRect(i * cellsize, j * cellsize, cellsize, cellsize);
+                g.fillRect(i * cellsize + edgeWidth, j * cellsize + edgeWidth, cellsize - 2 * edgeWidth, cellsize - 2 * edgeWidth);
             }
     }
 
@@ -95,33 +95,33 @@ public class PFPanel extends JPanel {
 
     public void keyPressed(int code)
     {
-        //if (!runningAlgo)
-        //{
+        if (!runningAlgo)
+        {
             switch (code)
             {
                 case KeyEvent.VK_1:
-                EventLog.add("One Key Pressed! Setting Start Point!");
-                initState.setStart(currCell[0], currCell[1]);
-                break;
+                    EventLog.add("One Key Pressed! Setting Start Point!");
+                    initState.setStart(currCell[0], currCell[1]);
+                    break;
                 case KeyEvent.VK_2:
-                EventLog.add("Two Key Pressed! Setting End Point!");
-                initState.setEnd(currCell[0], currCell[1]);
-                break;
+                    EventLog.add("Two Key Pressed! Setting End Point!");
+                    initState.setEnd(currCell[0], currCell[1]);
+                    break;
                 case KeyEvent.VK_B:
-                showDebug = !showDebug;
-                break;
+                    showDebug = !showDebug;
+                    break;
                 case KeyEvent.VK_R:
-                runningAlgo = true;
-                // Pass initState to algorithm constructor based on field in algorithm option
-                break;
+                    runningAlgo = true;
+                    // Pass initState to algorithm constructor based on field in algorithm option
+                    break;
                 
             }
             repaint();
-        //}
-        //else
-        //{
+        }
+        else
+        {
 
-        //}
+        }
             
     }
 

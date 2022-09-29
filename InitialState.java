@@ -20,46 +20,45 @@ public class InitialState {
         this.width = width;
         this.height = height;
         this.state = new int[width][height];
-        this.startInit = false;
         this.start = new int[2];
-        this.endInit = false;
         this.end = new int[2];
     }
 
-    public void clearCell(int x, int y)
+    public void setEmpty(int x, int y)
     {
-        if (state[x][y] == 2)
-            startInit = false;
-        else if (state[x][y] == 3)
-            endInit = false;
+        if (x < 0 || x >= width || y < 0 || y >= height) return;
         this.state[x][y] = 0;
     }
 
     public void setWall(int x, int y)
     {
-        if (state[x][y] == 2)
-            startInit = false;
-        else if (state[x][y] == 3)
-            endInit = false;
+        if (x < 0 || x >= width || y < 0 || y >= height) return;
         this.state[x][y] = 1;
     }
 
     public void setStart(int x, int y)
     {
-        this.startInit = true;
-        if (state[x][y] == 3)
-            endInit = false;
+        this.setEmpty(start[0], start[1]);
+        /* if (end[0] == x && end[1] == y) {
+            end[0] = -1;
+            end[1] = -1;
+        } */
         this.state[x][y] = 2;
         this.start[0] = x;
         this.start[1] = y;
-        
     }
 
     public void setEnd(int x, int y)
     {
-        this.endInit = true;
-        if (state[x][y] == 2)
-            startInit = false;
+        // set previous square to empty
+        // if sq is start, unset start
+        // set state[x][y] to 3
+        // set end to x and y
+        this.setEmpty(end[0], end[1]);
+        /* if (start[0] == x && start[1] == y) {
+            start[0] = -1;
+            start[1] = -1;
+        } */
         this.state[x][y] = 3;
         this.end[0] = x;
         this.end[1] = y;
