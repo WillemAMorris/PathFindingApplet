@@ -50,11 +50,6 @@ public class InitialState {
         this.end[1] = y;
     }
 
-    public Pair getCell(int x, int y)
-    {
-        return this.colorKey.get(state[x][y]);
-    }
-
     public java.util.ArrayList<Pair> getColorKey()
     {
         return this.colorKey;
@@ -72,7 +67,7 @@ public class InitialState {
 
     public int[][] getState()
     {
-        return this.state;
+        return this.state.clone();
     }
 
     public int[] getStart()
@@ -87,6 +82,6 @@ public class InitialState {
 
     public boolean readyToSend()
     {
-        return (start[0] != -1 && start[1] != -1 && end[0] != -1 && end[1] != -1);
+        return ((start[0] != -1 && start[1] != -1) || (end[0] != -1 && end[1] != -1));
     }
 }

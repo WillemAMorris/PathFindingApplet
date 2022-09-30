@@ -38,8 +38,10 @@ public class PFPanel extends JPanel {
         this.edgeWidth = 2;
         
         // Algorithm
-        clearInitialState();
+        initState = new InitialState(panelDimensions.width / cellsize, panelDimensions.height / cellsize);
+        panelDimensions.setSize(initState.getWidth() * cellsize, initState.getHeight() * cellsize);
         this.runningAlgo = false;
+        this.algorithm = null;
 
 
         mouseListener = new PFMouseListener();
@@ -47,10 +49,14 @@ public class PFPanel extends JPanel {
         addMouseMotionListener(mouseListener);
     }
 
-    private void clearInitialState()
+    public void clearInitialState()
     {
-        initState = new InitialState(panelDimensions.width / cellsize, panelDimensions.height / cellsize);
-        panelDimensions.setSize(initState.getWidth() * cellsize, initState.getHeight() * cellsize);
+        if (!runningAlgo) {
+            initState = new InitialState(panelDimensions.width / cellsize, panelDimensions.height / cellsize);
+            panelDimensions.setSize(initState.getWidth() * cellsize, initState.getHeight() * cellsize);
+            Log("Clearing...");
+            repaint();
+        }
     }
 
     private void renderInitState(Graphics g)
@@ -97,16 +103,21 @@ public class PFPanel extends JPanel {
 
     public void keyPressed(int code)
     {
+        if (code == KeyEvent.VK_ESCAPE) {
+            if (algorithm != null)
+                System.out.println(algorithm.getStats());
+            System.exit(1);
+        }
         if (!runningAlgo)
         {
             switch (code)
             {
                 case KeyEvent.VK_1:
-                    EventLog.add("One Key Pressed! Setting Start Point!");
+                    Log("One Key Pressed! Setting Start Point!");
                     initState.setStart(currCell[0], currCell[1]);
                     break;
                 case KeyEvent.VK_2:
-                    EventLog.add("Two Key Pressed! Setting End Point!");
+                    Log("Two Key Pressed! Setting End Point!");
                     initState.setEnd(currCell[0], currCell[1]);
                     break;
                 case KeyEvent.VK_B:
@@ -115,16 +126,43 @@ public class PFPanel extends JPanel {
             }
             repaint();
         }
-        else
+        else if (algorithm.reachedTarget() == false)
         {
-
+            switch (code)
+            {
+                case KeyEvent.VK_RIGHT:
+                    Log("Updating board");
+                    algorithm.update();
+                    break;
+                case KeyEvent.VK_LEFT:
+                    Log("Rewinding board");
+                    algorithm.rewindState();
+                    break;
+            }
+            repaint();
         }
             
     }
 
+    public void resetAlgo()
+    {
+        if (runningAlgo)
+        {
+            runningAlgo = false;
+            algorithm = null;
+            Log("Resetting...");
+            repaint();
+        }
+        
+    }
+
     public void runAlgo(String algoName)
     {
-        EventLog.add("Running Path Finding Algorithm: " + algoName);
+        if (!initState.readyToSend()) {
+            Log("Start/End point not set!");
+            return;
+        }
+        Log("Running Path Finding Algorithm: " + algoName);
         runningAlgo = true;
         // Initialize algorithm
         switch(algoName)
@@ -133,6 +171,11 @@ public class PFPanel extends JPanel {
                 algorithm = new AStar(initState);
                 break;
         }
+        repaint();
+    }
+
+    public void Log(String message) {
+        EventLog.add(message);
     }
 
     private class PFMouseListener implements MouseListener, MouseMotionListener
@@ -169,33 +212,39 @@ public class PFPanel extends JPanel {
 
         @Override
         public void mousePressed(java.awt.event.MouseEvent e) {
-            switch (e.getButton())
+            if (!runningAlgo)
             {
-                case java.awt.event.MouseEvent.BUTTON1:
-                EventLog.add("Mouse One Pressed!");
-                initState.setWall(currCell[0], currCell[1]);
-                this.leftClicked = true;
-                break;
-                case java.awt.event.MouseEvent.BUTTON3:
-                EventLog.add("Mouse Three Pressed!");
-                initState.setEmpty(currCell[0], currCell[1]);
-                this.rightClicked = true;
-                break;
-            } 
-            repaint();
+                switch (e.getButton())
+                {
+                    case java.awt.event.MouseEvent.BUTTON1:
+                    EventLog.add("Mouse One Pressed!");
+                    initState.setWall(currCell[0], currCell[1]);
+                    this.leftClicked = true;
+                    break;
+                    case java.awt.event.MouseEvent.BUTTON3:
+                    EventLog.add("Mouse Three Pressed!");
+                    initState.setEmpty(currCell[0], currCell[1]);
+                    this.rightClicked = true;
+                    break;
+                } 
+                repaint();
+            }
         }
 
         @Override
         public void mouseReleased(java.awt.event.MouseEvent e) {
-            switch (e.getButton())
+            if (!runningAlgo)
             {
-                case java.awt.event.MouseEvent.BUTTON1:
-                this.leftClicked = false;
-                break;
-                case java.awt.event.MouseEvent.BUTTON3:
-                this.rightClicked = false;
-            } 
-            repaint();
+                switch (e.getButton())
+                {
+                    case java.awt.event.MouseEvent.BUTTON1:
+                    this.leftClicked = false;
+                    break;
+                    case java.awt.event.MouseEvent.BUTTON3:
+                    this.rightClicked = false;
+                } 
+                repaint();
+            }
         }
 
         @Override

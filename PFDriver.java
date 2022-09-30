@@ -44,11 +44,26 @@ public class PFDriver extends JFrame
         runButton.setAlignmentY(Component.CENTER_ALIGNMENT);
         runButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         runButton.addKeyListener(keyListener);
+        JButton clearButton = new JButton("Clear");
+        clearButton.addKeyListener(keyListener);
+        clearButton.addActionListener(e ->  {
+            pathfindingPanel.clearInitialState();
+            pathfindingPanel.repaint();
+        });
+        JButton resetButton = new JButton("Reset");
+        resetButton.addKeyListener(keyListener);
+        resetButton.addActionListener(e -> {
+            pathfindingPanel.resetAlgo();
+            pathfindingPanel.repaint();
+        });
+
         options.add(runButton);
         options.add(Box.createRigidArea(new Dimension(10,0)));
-        options.add(new JButton("Clear"));
+        options.add(clearButton);
+        options.add(Box.createRigidArea(new Dimension(10,0)));
+        options.add(resetButton);
 
-        // Set-up PFPanel
+        // Set-up PFPanel /
 
 
         // Set-up main panel
@@ -86,8 +101,6 @@ public class PFDriver extends JFrame
     {
         public void keyPressed(KeyEvent e)
         {
-            if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-                System.exit(1);
             pathfindingPanel.keyPressed(e.getKeyCode());
         }
         public void keyReleased(KeyEvent e)
