@@ -18,18 +18,34 @@ public class InitialState {
         this.width = width;
         this.height = height;
         this.state = new int[width][height];
-        this.start = new int[2];
-        this.end = new int[2];
+        this.start = new int[]{-1, -1};
+        this.end = new int[]{-1, -1};
     }
 
     public void setEmpty(int x, int y)
     {
         if (x < 0 || x >= width || y < 0 || y >= height) return;
+        if (x == start[0] && y == start[1]) {
+            start[0] = -1;
+            start[1] = -1;
+        }
+        if (x == end[0] && y == end[1]) {
+            end[0] = -1;
+            end[1] = -1;
+        }
         this.state[x][y] = 0;
     }
 
     public void setWall(int x, int y)
     {
+        if (x == start[0] && y == start[1]) {
+            start[0] = -1;
+            start[1] = -1;
+        }
+        if (x == end[0] && y == end[1]) {
+            end[0] = -1;
+            end[1] = -1;
+        }
         if (x < 0 || x >= width || y < 0 || y >= height) return;
         this.state[x][y] = 1;
     }

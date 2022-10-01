@@ -16,7 +16,6 @@ public class PFPanel extends JPanel {
 
     private int edgeWidth;
     private int[] currCell;
-    private Point mousePos;
     private int cellsize;
 
     private PFMouseListener mouseListener;
@@ -42,7 +41,6 @@ public class PFPanel extends JPanel {
         this.algorithm = null;
 
 
-        this.mousePos = new Point(); // Keeps track of mouse position
         mouseListener = new PFMouseListener();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
@@ -156,7 +154,7 @@ public class PFPanel extends JPanel {
 
     public void runAlgo(String algoName)
     {
-        if (!initState.readyToSend()) {
+        if (initState.readyToSend()) {
             Log("Running Path Finding Algorithm: " + algoName);
             runningAlgo = true;
             // Initialize algorithm
@@ -187,39 +185,39 @@ public class PFPanel extends JPanel {
         public void mouseDragged(java.awt.event.MouseEvent e) {      
             if (getBounds().contains(e.getX(), e.getY()))
             {
-                currCell[0] = (int)(mousePos.getX() / cellsize);
-                currCell[1] = (int)(mousePos.getY() / cellsize);
+                currCell[0] = e.getX() / cellsize;
+                currCell[1] = e.getY() / cellsize;
             }
-            initState.setWall(currCell[0], currCell[1]);
+            if (leftClicked)
+            {
+                initState.setWall(currCell[0], currCell[1]);
+            }
+            if (rightClicked)
+            {
+                initState.setEmpty(currCell[0], currCell[1]);
+            }
+            
+
 
             repaint();
         }
 
         @Override
         public void mouseMoved(java.awt.event.MouseEvent e) {
-            
-            // Gets the absolute mouse position: MouseInfo.getPointerInfo().getLocation();
-            mousePos.x = e.getX(); 
-            mousePos.y = e.getY();
-
-            if (getBounds().contains(mousePos))
+            if (getBounds().contains(e.getX(), e.getY()))
             {
-                currCell[0] = (int)(mousePos.getX() / cellsize);
-                currCell[1] = (int)(mousePos.getY() / cellsize);
+                currCell[0] = e.getX() / cellsize;
+                currCell[1] = e.getY() / cellsize;
             }
-            if (mouseListener.leftClicked)
-            {
-                initState.setWall(currCell[0], currCell[1]);
-            }
-            if (mouseListener.rightClicked)
-            {
-                initState.setEmpty(currCell[0], currCell[1]);
-            }
-            repaint();
         }
 
         @Override
         public void mousePressed(java.awt.event.MouseEvent e) {
+            if (getBounds().contains(e.getX(), e.getY()))
+            {
+                currCell[0] = e.getX() / cellsize;
+                currCell[1] = e.getY() / cellsize;
+            }
             if (!runningAlgo)
             {
                 switch (e.getButton())

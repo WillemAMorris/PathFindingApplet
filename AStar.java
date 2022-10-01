@@ -53,6 +53,7 @@ public class AStar extends PathFindingAlgo {
         colorKey.add(new Pair("OPEN", Color.yellow));
         colorKey.add(new Pair("CLOSED", Color.BLUE));
         colorKey.add(new Pair("PATH", Color.MAGENTA));
+        colorKey.add(new Pair("NEXT NODE", Color.CYAN));
         int h = hCost(startCell[0], startCell[1]);
         openNodes.add(new Node(startCell[0], startCell[1], 0 + h ,0, h));
     }
@@ -136,6 +137,8 @@ public class AStar extends PathFindingAlgo {
                     board[i][j] = 4;
                 }
             }
+        Node next = openNodes.peek();
+        board[next.x][next.y] = 7;
         this.addState(board);
     }
 
