@@ -67,7 +67,11 @@ public class InitialState {
 
     public int[][] getState()
     {
-        return this.state.clone();
+        int[][] b = new int[width][height];
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                b[i][j] = this.state[i][j];
+        return b;
     }
 
     public int[] getStart()
@@ -82,6 +86,6 @@ public class InitialState {
 
     public boolean readyToSend()
     {
-        return ((start[0] != -1 && start[1] != -1) || (end[0] != -1 && end[1] != -1));
+        return (start[0] != -1 && start[1] != -1 && end[0] != -1 && end[1] != -1);
     }
 }

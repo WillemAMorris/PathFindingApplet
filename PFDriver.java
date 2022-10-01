@@ -4,7 +4,6 @@ import java.awt.event.*;
 
 public class PFDriver extends JFrame
 {
-    private boolean paused;
     private PFPanel pathfindingPanel;
     private int width, height;
 
@@ -14,7 +13,6 @@ public class PFDriver extends JFrame
         Dimension screenDimensions = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         this.width = screenDimensions.width;
         this.height = screenDimensions.height;
-        this.paused = false;
         this.setSize(width, height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -24,10 +22,10 @@ public class PFDriver extends JFrame
         this.addKeyListener(keyListener);
         // Set-up options panel
         JPanel options = new JPanel();
+        options.setMaximumSize(new Dimension(this.width, 40));
         options.setBounds(0,0, this.width, 60);
-        options.setLayout(new BoxLayout(options, BoxLayout.X_AXIS));
+        options.setLayout(new FlowLayout());
         options.addKeyListener(keyListener);
-        
         pathfindingPanel = new PFPanel(this.width, this.height - options.getHeight());
         pathfindingPanel.addKeyListener(keyListener);
         /*  Set up Options buttons
@@ -38,9 +36,13 @@ public class PFDriver extends JFrame
          * - step forward button
          * - step backward button
          */
+        String[] algorithms = new String[]{"A-Star"};
+        JComboBox<String>algoList = new JComboBox<String>(algorithms);
+        algoList.addKeyListener(keyListener);
+        algoList.setSelectedItem("A-Star");
+
         JButton runButton = new JButton("Run");
-        runButton.addActionListener(e -> pathfindingPanel.runAlgo("A-Star"));
-        //runButton.setMargin(new java.awt.Insets(5,5,5,5));
+        runButton.addActionListener(e -> pathfindingPanel.runAlgo((String)(algoList.getSelectedItem())));
         runButton.setAlignmentY(Component.CENTER_ALIGNMENT);
         runButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         runButton.addKeyListener(keyListener);
@@ -57,14 +59,13 @@ public class PFDriver extends JFrame
             pathfindingPanel.repaint();
         });
 
+        options.add(algoList);
+        options.add(Box.createRigidArea(new Dimension(10,0)));
         options.add(runButton);
         options.add(Box.createRigidArea(new Dimension(10,0)));
         options.add(clearButton);
         options.add(Box.createRigidArea(new Dimension(10,0)));
         options.add(resetButton);
-
-        // Set-up PFPanel /
-
 
         // Set-up main panel
         JPanel mainPanel = new JPanel();
@@ -82,34 +83,15 @@ public class PFDriver extends JFrame
         driver.setVisible(true);
     }        
 
-    public boolean isPaused()
-    {
-        return paused;
-    }
-
-    public int getWidth()
-    {
-        return width;
-    }
-
-    public int getHeight()
-    {
-        return height;
-    }
-
     private class PFKeyListener implements KeyListener
     {
         public void keyPressed(KeyEvent e)
         {
             pathfindingPanel.keyPressed(e.getKeyCode());
         }
-        public void keyReleased(KeyEvent e)
-        {
-
+        public void keyReleased(KeyEvent e) {
         }
-        public void keyTyped(KeyEvent e)
-        {
-
+        public void keyTyped(KeyEvent e){
         }
     } 
 }

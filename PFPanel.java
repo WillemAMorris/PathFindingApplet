@@ -16,7 +16,6 @@ public class PFPanel extends JPanel {
 
     private int edgeWidth;
     private int[] currCell;
-    private Rectangle panelDimensions;
     private Point mousePos;
     private int cellsize;
 
@@ -30,20 +29,20 @@ public class PFPanel extends JPanel {
         this.history = 20;
         this.showDebug = true;
         
-        this.mousePos = new Point();
         // Rendering
         this.currCell = new int[]{0,0};
-        this.panelDimensions = new Rectangle(this.getX(), this.getY(), pW, pH);
         this.cellsize = 40;
         this.edgeWidth = 2;
         
         // Algorithm
-        initState = new InitialState(panelDimensions.width / cellsize, panelDimensions.height / cellsize);
-        panelDimensions.setSize(initState.getWidth() * cellsize, initState.getHeight() * cellsize);
+        this.setLocation(0,0);
+        this.setSize(pW, pH);
+        initState = new InitialState(this.getWidth() / cellsize, this.getHeight() / cellsize);
         this.runningAlgo = false;
         this.algorithm = null;
 
 
+        this.mousePos = new Point(); // Keeps track of mouse position
         mouseListener = new PFMouseListener();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
@@ -52,8 +51,7 @@ public class PFPanel extends JPanel {
     public void clearInitialState()
     {
         if (!runningAlgo) {
-            initState = new InitialState(panelDimensions.width / cellsize, panelDimensions.height / cellsize);
-            panelDimensions.setSize(initState.getWidth() * cellsize, initState.getHeight() * cellsize);
+            initState = new InitialState(this.getWidth() / cellsize, this.getHeight() / cellsize);
             Log("Clearing...");
             repaint();
         }
@@ -126,13 +124,13 @@ public class PFPanel extends JPanel {
             }
             repaint();
         }
-        else if (algorithm.reachedTarget() == false)
+        else
         {
             switch (code)
             {
                 case KeyEvent.VK_RIGHT:
                     Log("Updating board");
-                    algorithm.update();
+                    algorithm.advanceState();
                     break;
                 case KeyEvent.VK_LEFT:
                     Log("Rewinding board");
@@ -159,17 +157,19 @@ public class PFPanel extends JPanel {
     public void runAlgo(String algoName)
     {
         if (!initState.readyToSend()) {
-            Log("Start/End point not set!");
-            return;
+            Log("Running Path Finding Algorithm: " + algoName);
+            runningAlgo = true;
+            // Initialize algorithm
+            switch(algoName)
+            {
+                case "A-Star":
+                    algorithm = new AStar(initState);
+                    break;
+            }
         }
-        Log("Running Path Finding Algorithm: " + algoName);
-        runningAlgo = true;
-        // Initialize algorithm
-        switch(algoName)
+        else
         {
-            case "A-Star":
-                algorithm = new AStar(initState);
-                break;
+            Log("Start/End Point Not Set!");
         }
         repaint();
     }
@@ -194,7 +194,7 @@ public class PFPanel extends JPanel {
             mousePos.x = e.getX(); 
             mousePos.y = e.getY();
 
-            if (panelDimensions.contains(mousePos))
+            if (getBounds().contains(mousePos))
             {
                 currCell[0] = (int)(mousePos.getX() / cellsize);
                 currCell[1] = (int)(mousePos.getY() / cellsize);
@@ -217,12 +217,14 @@ public class PFPanel extends JPanel {
                 switch (e.getButton())
                 {
                     case java.awt.event.MouseEvent.BUTTON1:
-                    EventLog.add("Mouse One Pressed!");
+                    Log("Mouse One Pressed!");
+                    Log("Setting Wall: " + currCell[0] + ", " + currCell[1]);
                     initState.setWall(currCell[0], currCell[1]);
                     this.leftClicked = true;
                     break;
                     case java.awt.event.MouseEvent.BUTTON3:
-                    EventLog.add("Mouse Three Pressed!");
+                    Log("Mouse Three Pressed!");
+                    Log("Setting Empty: " + currCell[0] + ", " + currCell[1]);
                     initState.setEmpty(currCell[0], currCell[1]);
                     this.rightClicked = true;
                     break;

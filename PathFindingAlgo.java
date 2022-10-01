@@ -26,7 +26,7 @@ public abstract class PathFindingAlgo {
 
     public void advanceState()
     {
-        if (currState == history.size() - 1)
+        if (currState == history.size() - 1 && !this.reachedTarget)
             this.update();
         else if (currState < history.size() - 1)
             ++currState;

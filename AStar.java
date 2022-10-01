@@ -1,5 +1,6 @@
 import java.util.PriorityQueue;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.lang.Math;
 import java.awt.Color;
 import java.util.Comparator;
@@ -7,11 +8,11 @@ import java.util.Comparator;
 public class AStar extends PathFindingAlgo {
     private final int STRAIGHT_COST = 10, DIAG_COST = 14; 
     private PriorityQueue<Node> openNodes;
-    private ArrayList<int[]> closedNodes;
     private int stepsTaken;
 
-    private class Node {
-        int f, g, h;
+    private class Node implements Comparable<Node>{
+        Node parent;
+        int f, g, h; // g is distance to start, h is distance to end, f = g + h
         int x, y;
 
         Node(int x, int y, int f, int g, int h) {
@@ -21,18 +22,25 @@ public class AStar extends PathFindingAlgo {
             this.g = g;
             this.h = h;
         }
+
+        public int compareTo(Node o)
+        {
+            if (o.x == this.x && o.y == this.y) 
+                return 0;
+            return 1;
+        }
     }
 
     private class NodeComparator implements Comparator<Node> {
         public int compare(Node o1, Node o2)
         {
-            if (o1.h < o2.h)
+            if (o1.f < o2.f)
                 return -1;
-            else if (o1.h > o2.h)
+            else if (o1.f > o2.f)
                 return 1;
-            else if (o1.f < o2.f)
+            else if (o1.h < o2.h)
                 return -1;
-            else if (o1.f < o2.f)
+            else if (o1.h < o2.h)
                 return 1;
             else
                 return 0;
@@ -41,15 +49,16 @@ public class AStar extends PathFindingAlgo {
 
     public AStar(InitialState init) {
         super(init);
+        this.addState(super.history.get(super.currState));
         openNodes = new PriorityQueue<Node>(new NodeComparator());
-        closedNodes = new ArrayList<int[]>();
-        colorKey.add(new Pair("OPEN", Color.ORANGE));
+        colorKey.add(new Pair("OPEN", Color.yellow));
         colorKey.add(new Pair("CLOSED", Color.BLUE));
-        int g = gCost(startCell[0], startCell[1]);
-        openNodes.add(new Node(startCell[0], startCell[1], g ,0, g));
+        colorKey.add(new Pair("PATH", Color.MAGENTA));
+        int h = hCost(startCell[0], startCell[1]);
+        openNodes.add(new Node(startCell[0], startCell[1], 0 + h ,0, h));
     }
 
-    public int gCost(int x, int y)
+    public int hCost(int x, int y) // distance to end node
     {
         int horiDiff = Math.abs(endCell[0] - x), vertDiff = Math.abs(endCell[1] - y);
         if (horiDiff > vertDiff)
@@ -57,7 +66,7 @@ public class AStar extends PathFindingAlgo {
         return horiDiff * DIAG_COST + (vertDiff - horiDiff) * STRAIGHT_COST;
     }
 
-    public int fCost(int x, int y)
+    public int gCost(int x, int y) // distance to start node
     {
         int horiDiff = Math.abs(startCell[0] - x), vertDiff = Math.abs(startCell[1] - y);
         if (horiDiff > vertDiff)
@@ -65,33 +74,79 @@ public class AStar extends PathFindingAlgo {
         return horiDiff * DIAG_COST + (vertDiff - horiDiff) * STRAIGHT_COST;
     }
 
+    private void addState(int[][] board)
+    {
+        this.history.add(copy(board));
+        currState = history.size() - 1;
+    }
+
+    public void drawPath(Node startNode)
+    {
+        Node currNode = startNode;
+        int[][] board = this.getState();
+        while (currNode != null)
+        {
+            board[currNode.x][currNode.y] = 6;
+            currNode = currNode.parent;
+        }
+        this.addState(board);
+    }
+
     public void update() {
         ++stepsTaken;
-        Node curr = openNodes.poll();
-        closedNodes.add(new int[]{curr.x, curr.y});
-        int[][] board = this.getState();
-        board[curr.x][curr.y] = 5;
-        if (curr.x == endCell[0] && curr.y == endCell[1])
+        int[][] board = this.getState(); 
+        Node curr = openNodes.poll();   // Get top priority, open node
+        board[curr.x][curr.y] = 5;  // set curr node to closed
+        if (curr.x == endCell[0] && curr.y == endCell[1]) // if target is reached, return
         {
+            this.drawPath(curr);
             this.reachedTarget = true;
             return;
         }
+        // for each neighbor
         for (int i = Math.max(curr.x - 1, 0); i < Math.min(curr.x + 2, width - 1); i++)
             for (int j = Math.max(curr.y - 1, 0); j < Math.min(curr.y + 2, height - 1); j++)
             {
-                if (board[i][j] == 1 || board[i][j] == 5) continue;
-                int f1 = 0;
+                if (board[i][j] == 1 || board[i][j] == 5) continue; // neighbor is a wall or closed
+                int g = 0;
                 if (curr.x - i == 0 || curr.y - j == 0) 
-                    f1 = curr.f + STRAIGHT_COST;
+                    g = curr.g + STRAIGHT_COST;
                 else 
-                    f1 = curr.f + DIAG_COST;
-                int f = Math.min(f1, fCost(i, j));
-                int g = gCost(i, j);
-                board[i][j] = 4;
-                openNodes.add(new Node(i, j, f, g, f + g));
+                    g = curr.g + DIAG_COST;
+                int h = hCost(i, j);
+                Node neighbor = new Node(i, j, g + h, g, h);
+                neighbor.parent = curr;
+ 
+                boolean inside = false;
+                Iterator<Node> it = openNodes.iterator();
+                while (it.hasNext())
+                {
+                    Node n = it.next();
+                    if (n.x == neighbor.x && n.y == neighbor.y)
+                    {
+                        if (n.f > neighbor.f) {
+                            openNodes.remove(n);
+                            openNodes.add(neighbor);
+                        }
+                        inside = true;
+                        break;
+                    }
+                }
+                if (!inside) {
+                    openNodes.add(neighbor);
+                    board[i][j] = 4;
+                }
             }
-        this.history.add(board.clone());
-        currState = history.size() - 1;
+        this.addState(board);
+    }
+
+    private int[][] copy(int[][] board)
+    {
+        int[][] b = new int[width][height];
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                b[i][j] = board[i][j];
+        return b;
     }
 
     public String getStats()
