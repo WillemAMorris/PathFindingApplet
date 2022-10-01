@@ -36,6 +36,7 @@ public class PFDriver extends JFrame
          * - step forward button
          * - step backward button
          */
+
         String[] algorithms = new String[]{"A-Star"};
         JComboBox<String>algoList = new JComboBox<String>(algorithms);
         algoList.addKeyListener(keyListener);
@@ -58,7 +59,7 @@ public class PFDriver extends JFrame
             pathfindingPanel.resetAlgo();
             pathfindingPanel.repaint();
         });
-
+        options.add(new JLabel("Algorithm"));
         options.add(algoList);
         options.add(Box.createRigidArea(new Dimension(10,0)));
         options.add(runButton);
@@ -78,7 +79,7 @@ public class PFDriver extends JFrame
 
     public static void main(String[] args)
     {
-        PFDriver driver = new PFDriver("A* Algorithm");
+        PFDriver driver = new PFDriver("Path Finding Applet");
         
         driver.setVisible(true);
     }        
