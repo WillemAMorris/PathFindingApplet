@@ -5,6 +5,7 @@ import java.awt.event.*;
 public class PFDriver extends JFrame
 {
     private PFPanel pathfindingPanel;
+    private JLabel lastAction;
     private int width, height;
 
     public PFDriver(String title)
@@ -29,44 +30,49 @@ public class PFDriver extends JFrame
         pathfindingPanel = new PFPanel(this.width, this.height - options.getHeight());
         pathfindingPanel.addKeyListener(keyListener);
         /*  Set up Options buttons
-         * - Algorithm drop down menu
-         * - Run button
+         * - Algorithm drop down menu (IN)
+         * - Run button (IN)
          * - pause/play button
-         * - Reset/Clear button
-         * - step forward button
+         * - Reset/Clear button (IN)
+         * - step forward button 
          * - step backward button
          */
-
         String[] algorithms = new String[]{"A-Star"};
+
         JComboBox<String>algoList = new JComboBox<String>(algorithms);
+        JButton runButton = new JButton("Run");
+        JButton resetButton = new JButton("Clear Board");
+        lastAction = new JLabel("Started App");
+        
         algoList.addKeyListener(keyListener);
         algoList.setSelectedItem("A-Star");
 
-        JButton runButton = new JButton("Run");
-        runButton.addActionListener(e -> pathfindingPanel.runAlgo((String)(algoList.getSelectedItem())));
-        runButton.setAlignmentY(Component.CENTER_ALIGNMENT);
-        runButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        runButton.addKeyListener(keyListener);
-        JButton clearButton = new JButton("Clear");
-        clearButton.addKeyListener(keyListener);
-        clearButton.addActionListener(e ->  {
-            pathfindingPanel.clearInitialState();
-            pathfindingPanel.repaint();
+        runButton.addActionListener(e -> {
+            pathfindingPanel.runAlgo((String)(algoList.getSelectedItem()));
+            resetButton.setText("Reset Algo");
         });
-        JButton resetButton = new JButton("Reset");
+        runButton.addKeyListener(keyListener);
+
         resetButton.addKeyListener(keyListener);
         resetButton.addActionListener(e -> {
-            pathfindingPanel.resetAlgo();
+            if (resetButton.getText() == "Reset Algo") {
+                pathfindingPanel.resetAlgo();
+                resetButton.setText("Clear Board");
+            }
+            else {
+                pathfindingPanel.clearInitialState();
+            }
             pathfindingPanel.repaint();
         });
+
         options.add(new JLabel("Algorithm"));
         options.add(algoList);
         options.add(Box.createRigidArea(new Dimension(10,0)));
         options.add(runButton);
         options.add(Box.createRigidArea(new Dimension(10,0)));
-        options.add(clearButton);
-        options.add(Box.createRigidArea(new Dimension(10,0)));
         options.add(resetButton);
+        options.add(Box.createRigidArea(new Dimension(100,0)));
+        options.add(lastAction);
 
         // Set-up main panel
         JPanel mainPanel = new JPanel();
@@ -77,12 +83,17 @@ public class PFDriver extends JFrame
         this.add(mainPanel);
     }
 
+    public void setLastAction(String text)
+    {
+        this.lastAction.setText(text);
+    }
+
     public static void main(String[] args)
     {
         PFDriver driver = new PFDriver("Path Finding Applet");
         
         driver.setVisible(true);
-    }        
+    }
 
     private class PFKeyListener implements KeyListener
     {

@@ -87,14 +87,15 @@ public class PFPanel extends JPanel {
             this.renderAlgo(g);
         else
             this.renderInitState(g);
-
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.BOLD, 16));
-        int count = 0;
-        for (int i=EventLog.size() - 1; i>=0 && i > EventLog.size() - history; i--)
+        if (showDebug)
         {
-            g.drawString(EventLog.get(i), 20, 20 + 20 * (count++));
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.BOLD, 16));
+            int count = 0;
+            for (int i=EventLog.size() - 1; i>=0 && i > EventLog.size() - history; i--)
+                g.drawString(EventLog.get(i), 20, 20 + 20 * (count++));
         }
+        
     }
 
     public void keyPressed(int code)
@@ -189,16 +190,9 @@ public class PFPanel extends JPanel {
                 currCell[1] = e.getY() / cellsize;
             }
             if (leftClicked)
-            {
                 initState.setWall(currCell[0], currCell[1]);
-            }
             if (rightClicked)
-            {
                 initState.setEmpty(currCell[0], currCell[1]);
-            }
-            
-
-
             repaint();
         }
 

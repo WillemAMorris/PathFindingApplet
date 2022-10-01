@@ -9,24 +9,18 @@ public class AStar extends PathFindingAlgo {
     private PriorityQueue<Node> openNodes;
     private int stepsTaken;
 
-    private class Node implements Comparable<Node>{
+    private class Node{
         Node parent;
         int f, g, h; // g is distance to start, h is distance to end, f = g + h
         int x, y;
 
-        Node(int x, int y, int f, int g, int h) {
+        Node(int x, int y, int f, int g, int h, Node p) {
             this.x = x;
             this.y = y;
             this.f = f;
             this.g = g;
             this.h = h;
-        }
-
-        public int compareTo(Node o)
-        {
-            if (o.x == this.x && o.y == this.y) 
-                return 0;
-            return 1;
+            this.parent = p;
         }
     }
 
@@ -55,7 +49,7 @@ public class AStar extends PathFindingAlgo {
         colorKey.add(new Pair("PATH", Color.MAGENTA));
         colorKey.add(new Pair("NEXT NODE", Color.CYAN));
         int h = hCost(startCell[0], startCell[1]);
-        openNodes.add(new Node(startCell[0], startCell[1], 0 + h ,0, h));
+        openNodes.add(new Node(startCell[0], startCell[1], 0 + h ,0, h, null));
     }
 
     public int hCost(int x, int y) // distance to end node
@@ -114,8 +108,7 @@ public class AStar extends PathFindingAlgo {
                 else 
                     g = curr.g + DIAG_COST;
                 int h = hCost(i, j);
-                Node neighbor = new Node(i, j, g + h, g, h);
-                neighbor.parent = curr;
+                Node neighbor = new Node(i, j, g + h, g, h, curr);
  
                 boolean inside = false;
                 Iterator<Node> it = openNodes.iterator();
