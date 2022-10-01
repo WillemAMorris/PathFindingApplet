@@ -184,7 +184,15 @@ public class PFPanel extends JPanel {
         public boolean rightClicked;
 
         @Override
-        public void mouseDragged(java.awt.event.MouseEvent e) {        
+        public void mouseDragged(java.awt.event.MouseEvent e) {      
+            if (getBounds().contains(e.getX(), e.getY()))
+            {
+                currCell[0] = (int)(mousePos.getX() / cellsize);
+                currCell[1] = (int)(mousePos.getY() / cellsize);
+            }
+            initState.setWall(currCell[0], currCell[1]);
+
+            repaint();
         }
 
         @Override
