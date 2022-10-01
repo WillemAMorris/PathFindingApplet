@@ -18,11 +18,14 @@ public class PFPanel extends JPanel {
     private int[] currCell;
     private int cellsize;
 
+    private PFDriver driver;
     private PFMouseListener mouseListener;
 
 
-    public PFPanel(int pW, int pH)
+    public PFPanel(PFDriver d, int pW, int pH)
     {
+        this.driver = d;
+
         // Debugging
         this.EventLog = new ArrayList<String>();
         this.history = 20;
@@ -156,7 +159,7 @@ public class PFPanel extends JPanel {
     public void runAlgo(String algoName)
     {
         if (initState.readyToSend()) {
-            Log("Running Path Finding Algorithm: " + algoName);
+            driver.setLastAction("Running " + algoName + " Algorithm");
             runningAlgo = true;
             // Initialize algorithm
             switch(algoName)

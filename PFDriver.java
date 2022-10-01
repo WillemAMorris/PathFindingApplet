@@ -27,7 +27,7 @@ public class PFDriver extends JFrame
         options.setBounds(0,0, this.width, 60);
         options.setLayout(new FlowLayout());
         options.addKeyListener(keyListener);
-        pathfindingPanel = new PFPanel(this.width, this.height - options.getHeight());
+        pathfindingPanel = new PFPanel(this, this.width, this.height - options.getHeight());
         pathfindingPanel.addKeyListener(keyListener);
         /*  Set up Options buttons
          * - Algorithm drop down menu (IN)
