@@ -10,14 +10,14 @@ public class PFDriver extends JFrame
     public PFDriver(String title)
     {
         super(title);
-        Dimension screenDimensions = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        this.width = screenDimensions.width;
-        this.height = screenDimensions.height;
+        //Dimension screenDimensions = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        this.width = 1200;//screenDimensions.width;
+        this.height = 800;//screenDimensions.height;
         this.setSize(width, height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setUndecorated(true);
-        this.setResizable(true);
+        this.setResizable(false);
         PFKeyListener keyListener = new PFKeyListener();
         this.addKeyListener(keyListener);
         // Set-up options panel

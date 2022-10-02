@@ -2,53 +2,22 @@ import java.util.PriorityQueue;
 import java.util.Iterator;
 import java.lang.Math;
 import java.awt.Color;
-import java.util.Comparator;
 
 public class AStar extends PathFindingAlgo {
     private final int STRAIGHT_COST = 10, DIAG_COST = 14; 
-    private PriorityQueue<Node> openNodes;
-
-    private class Node{
-        Node parent;
-        int f, g, h; // g is distance to start, h is distance to end, f = g + h
-        int x, y;
-
-        Node(int x, int y, int f, int g, int h, Node p) {
-            this.x = x;
-            this.y = y;
-            this.f = f;
-            this.g = g;
-            this.h = h;
-            this.parent = p;
-        }
-    }
-
-    private class NodeComparator implements Comparator<Node> {
-        public int compare(Node o1, Node o2)
-        {
-            if (o1.f < o2.f)
-                return -1;
-            else if (o1.f > o2.f)
-                return 1;
-            else if (o1.h < o2.h)
-                return -1;
-            else if (o1.h < o2.h)
-                return 1;
-            else
-                return 0;
-        }
-    }
+    private PriorityQueue<GraphNode> openNodes;
 
     public AStar(InitialState init) {
         super(init);
         this.addState(super.history.get(super.currState));
-        openNodes = new PriorityQueue<Node>(new NodeComparator());
+        openNodes = new PriorityQueue<GraphNode>(/* GraphNode.getComparator() */);
+        int h = hCost(startCell[0], startCell[1]);
+        openNodes.add(new GraphNode(startCell[0], startCell[1], 0 + h, 0, h, null));
+        
         colorKey.add(new Pair("OPEN", Color.yellow));
         colorKey.add(new Pair("CLOSED", Color.BLUE));
         colorKey.add(new Pair("PATH", Color.MAGENTA));
         colorKey.add(new Pair("NEXT NODE", Color.CYAN));
-        int h = hCost(startCell[0], startCell[1]);
-        openNodes.add(new Node(startCell[0], startCell[1], 0 + h ,0, h, null));
     }
 
     public int hCost(int x, int y) // distance to end node
@@ -67,51 +36,53 @@ public class AStar extends PathFindingAlgo {
         return horiDiff * DIAG_COST + (vertDiff - horiDiff) * STRAIGHT_COST;
     }
 
-    public void drawPath(Node startNode)
+    public void drawPath(GraphNode startNode)
     {
-        Node currNode = startNode;
+        GraphNode currNode = startNode;
         int[][] board = this.getState();
         while (currNode != null)
         {
-            board[currNode.x][currNode.y] = 6;
-            currNode = currNode.parent;
+            board[currNode.getX()][currNode.getY()] = 6;
+            currNode = currNode.getParent();
         }
         this.addState(board);
     }
 
     public void update() {
-        if (openNodes.size() == 0)
+        if (openNodes.isEmpty())
             return;
         int[][] board = this.getState(); 
-        Node curr = openNodes.poll();   // Get top priority, open node
-        board[curr.x][curr.y] = 5;  // set curr node to closed
-        if (curr.x == endCell[0] && curr.y == endCell[1]) // if target is reached, return
+        GraphNode curr = openNodes.poll();   // Get top priority, open node
+        int x = curr.getX();
+        int y = curr.getY();
+        board[x][y] = 5;  // set curr node to closed
+        if (curr.equals(endCell)) // if target is reached, return
         {
             this.drawPath(curr);
             this.reachedTarget = true;
             return;
         }
         // for each neighbor
-        for (int i = Math.max(curr.x - 1, 0); i < Math.min(curr.x + 2, width - 1); i++)
-            for (int j = Math.max(curr.y - 1, 0); j < Math.min(curr.y + 2, height - 1); j++)
+        for (int i = Math.max(x - 1, 0); i < Math.min(x + 2, width - 1); i++)
+            for (int j = Math.max(y - 1, 0); j < Math.min(y + 2, height - 1); j++)
             {
                 if (board[i][j] == 1 || board[i][j] == 5) continue; // neighbor is a wall or closed
-                int g = 0;
-                if (curr.x - i == 0 || curr.y - j == 0) 
-                    g = curr.g + STRAIGHT_COST;
+                int g = curr.getG();
+                if (x - i == 0 || y - j == 0) 
+                    g += STRAIGHT_COST;
                 else 
-                    g = curr.g + DIAG_COST;
+                    g += DIAG_COST;
                 int h = hCost(i, j);
-                Node neighbor = new Node(i, j, g + h, g, h, curr);
+                GraphNode neighbor = new GraphNode(i, j, g + h, g, h, curr);
  
                 boolean inside = false;
-                Iterator<Node> it = openNodes.iterator();
+                Iterator<GraphNode> it = openNodes.iterator();
                 while (it.hasNext())
                 {
-                    Node n = it.next();
-                    if (n.x == neighbor.x && n.y == neighbor.y)
+                    GraphNode n = it.next();
+                    if (n.equals(neighbor))
                     {
-                        if (n.f > neighbor.f) {
+                        if (n.getCost() > neighbor.getCost()) {
                             openNodes.remove(n);
                             openNodes.add(neighbor);
                         }
@@ -124,10 +95,10 @@ public class AStar extends PathFindingAlgo {
                     board[i][j] = 4;
                 }
             }
-        if (openNodes.size() != 0)
+        if (!openNodes.isEmpty())
         {
-            Node next = openNodes.peek();
-            board[next.x][next.y] = 7;
+            GraphNode next = openNodes.peek();
+            board[next.getX()][next.getY()] = 7;
         }
         this.addState(board);
     }
