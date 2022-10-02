@@ -7,7 +7,6 @@ import java.util.Comparator;
 public class AStar extends PathFindingAlgo {
     private final int STRAIGHT_COST = 10, DIAG_COST = 14; 
     private PriorityQueue<Node> openNodes;
-    private int stepsTaken;
 
     private class Node{
         Node parent;
@@ -68,12 +67,6 @@ public class AStar extends PathFindingAlgo {
         return horiDiff * DIAG_COST + (vertDiff - horiDiff) * STRAIGHT_COST;
     }
 
-    private void addState(int[][] board)
-    {
-        this.history.add(copy(board));
-        currState = history.size() - 1;
-    }
-
     public void drawPath(Node startNode)
     {
         Node currNode = startNode;
@@ -87,7 +80,6 @@ public class AStar extends PathFindingAlgo {
     }
 
     public void update() {
-        ++stepsTaken;
         int[][] board = this.getState(); 
         Node curr = openNodes.poll();   // Get top priority, open node
         board[curr.x][curr.y] = 5;  // set curr node to closed
@@ -133,19 +125,5 @@ public class AStar extends PathFindingAlgo {
         Node next = openNodes.peek();
         board[next.x][next.y] = 7;
         this.addState(board);
-    }
-
-    private int[][] copy(int[][] board)
-    {
-        int[][] b = new int[width][height];
-        for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
-                b[i][j] = board[i][j];
-        return b;
-    }
-
-    public String getStats()
-    {
-        return "Steps Taken: " + stepsTaken;
     }
 }

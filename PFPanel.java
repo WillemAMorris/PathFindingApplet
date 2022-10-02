@@ -122,11 +122,8 @@ public class PFPanel extends JPanel {
 
     public void keyPressed(int code)
     {
-        if (code == KeyEvent.VK_ESCAPE) {
-            if (algorithm != null)
-                System.out.println(algorithm.getStats());
+        if (code == KeyEvent.VK_ESCAPE)
             System.exit(1);
-        }
         if (!runningAlgo)
         {
             switch (code)

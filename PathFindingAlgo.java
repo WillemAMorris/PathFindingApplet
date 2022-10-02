@@ -8,16 +8,32 @@ public abstract class PathFindingAlgo {
     protected int width, height;
 
     public PathFindingAlgo(InitialState init){
-        this.currState = 0;
         this.colorKey = init.getColorKey();
         this.startCell = init.getStart();
         this.endCell = init.getEnd();
         this.reachedTarget = false;
         this.width = init.getWidth();
         this.height = init.getHeight();
+        this.currState = 0;
         this.history = new java.util.ArrayList<int[][]>();
-        this.history.add(init.getState());
+        this.addState(init.getState());
     }
+
+    private int[][] copy(int[][] board)
+    {
+        int[][] b = new int[width][height];
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                b[i][j] = board[i][j];
+        return b;
+    }
+
+    public void addState(int[][] board)
+    {
+        this.history.add(copy(board));
+        currState = history.size() - 1;
+    }
+
     public void rewindState() 
     { 
         if (currState > 0)
@@ -43,8 +59,6 @@ public abstract class PathFindingAlgo {
     public boolean reachedTarget() {
         return reachedTarget;
     }
-
-    abstract String getStats();
 
     abstract void update();
 }
