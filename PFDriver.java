@@ -27,7 +27,7 @@ public class PFDriver extends JFrame
         options.setLayout(new FlowLayout());
         options.addKeyListener(keyListener);
 
-        String[] algorithms = new String[]{"A-Star"};
+        String[] algorithms = new String[]{"A-Star", "DFS", "BFS", "Dijkstra's"};
 
         JComboBox<String>algoList = new JComboBox<String>(algorithms);
         JButton runButton = new JButton("Run");

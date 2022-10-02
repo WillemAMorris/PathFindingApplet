@@ -201,6 +201,14 @@ public class PFPanel extends JPanel {
                 case "A-Star":
                     algorithm = new AStar(initState);
                     break;
+                case "BFS":
+                    algorithm = new BFS(initState);
+                    break;
+                case "DFS":
+                    algorithm = new DFS(initState);
+                    break;
+                case "Dijkstra's":
+                    algorithm = new Dijkstra(initState);
             }
         }
         else
