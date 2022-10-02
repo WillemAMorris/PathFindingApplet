@@ -80,6 +80,8 @@ public class AStar extends PathFindingAlgo {
     }
 
     public void update() {
+        if (openNodes.size() == 0)
+            return;
         int[][] board = this.getState(); 
         Node curr = openNodes.poll();   // Get top priority, open node
         board[curr.x][curr.y] = 5;  // set curr node to closed
@@ -122,8 +124,11 @@ public class AStar extends PathFindingAlgo {
                     board[i][j] = 4;
                 }
             }
-        Node next = openNodes.peek();
-        board[next.x][next.y] = 7;
+        if (openNodes.size() != 0)
+        {
+            Node next = openNodes.peek();
+            board[next.x][next.y] = 7;
+        }
         this.addState(board);
     }
 }
