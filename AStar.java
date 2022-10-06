@@ -11,7 +11,7 @@ public class AStar extends PathFindingAlgo {
         super(init);
         this.addState(super.history.get(super.currState));
         openNodes = new PriorityQueue<GraphNode>(/* GraphNode.getComparator() */);
-        int h = hCost(startCell[0], startCell[1]);
+        int h = heuristic(startCell[0], startCell[1]);
         openNodes.add(new GraphNode(startCell[0], startCell[1], 0 + h, 0, h, null));
         
         colorKey.add(new Pair("OPEN", Color.yellow));
@@ -20,17 +20,9 @@ public class AStar extends PathFindingAlgo {
         colorKey.add(new Pair("NEXT NODE", Color.CYAN));
     }
 
-    public int hCost(int x, int y) // distance to end node
+    public int heuristic(int x, int y) // distance to end node
     {
         int horiDiff = Math.abs(endCell[0] - x), vertDiff = Math.abs(endCell[1] - y);
-        if (horiDiff > vertDiff)
-            return vertDiff * DIAG_COST + (horiDiff - vertDiff) * STRAIGHT_COST;
-        return horiDiff * DIAG_COST + (vertDiff - horiDiff) * STRAIGHT_COST;
-    }
-
-    public int gCost(int x, int y) // distance to start node
-    {
-        int horiDiff = Math.abs(startCell[0] - x), vertDiff = Math.abs(startCell[1] - y);
         if (horiDiff > vertDiff)
             return vertDiff * DIAG_COST + (horiDiff - vertDiff) * STRAIGHT_COST;
         return horiDiff * DIAG_COST + (vertDiff - horiDiff) * STRAIGHT_COST;
@@ -63,38 +55,100 @@ public class AStar extends PathFindingAlgo {
             return;
         }
         // for each neighbor
-        for (int i = Math.max(x - 1, 0); i < Math.min(x + 2, width - 1); i++)
-            for (int j = Math.max(y - 1, 0); j < Math.min(y + 2, height - 1); j++)
-            {
-                if (board[i][j] == 1 || board[i][j] == 5) continue; // neighbor is a wall or closed
-                int g = curr.getG();
-                if (x - i == 0 || y - j == 0) 
-                    g += STRAIGHT_COST;
-                else 
-                    g += DIAG_COST;
-                int h = hCost(i, j);
-                GraphNode neighbor = new GraphNode(i, j, g + h, g, h, curr);
- 
-                boolean inside = false;
-                Iterator<GraphNode> it = openNodes.iterator();
-                while (it.hasNext())
+        if (this.allowDiagonals)
+            for (int i = Math.max(x - 1, 0); i < Math.min(x + 2, width - 1); i++)
+                for (int j = Math.max(y - 1, 0); j < Math.min(y + 2, height - 1); j++)
                 {
-                    GraphNode n = it.next();
-                    if (n.equals(neighbor))
+                    if (board[i][j] == 1 || board[i][j] == 5) continue; // neighbor is a wall or closed
+                    int g = curr.getG();
+                    if (i == x || j == y) 
+                        g += STRAIGHT_COST;
+                    else 
+                        g += DIAG_COST;
+                    int h = heuristic(i, j);
+                    GraphNode neighbor = new GraphNode(i, j, g + h, g, h, curr);
+    
+                    boolean inside = false;
+                    Iterator<GraphNode> it = openNodes.iterator();
+                    while (it.hasNext())
                     {
-                        if (n.getCost() > neighbor.getCost()) {
-                            openNodes.remove(n);
-                            openNodes.add(neighbor);
+                        GraphNode n = it.next();
+                        if (n.equals(neighbor))
+                        {
+                            if (n.getCost() > neighbor.getCost()) {
+                                openNodes.remove(n);
+                                openNodes.add(neighbor);
+                            }
+                            inside = true;
+                            break;
                         }
-                        inside = true;
-                        break;
+                    }
+                    if (!inside) {
+                        openNodes.add(neighbor);
+                        board[i][j] = 4;
                     }
                 }
-                if (!inside) {
-                    openNodes.add(neighbor);
-                    board[i][j] = 4;
+        else {
+            for (int i=-1; i < 2; i+=2)
+            {
+                int ix = x + i;
+                if (ix > -1 && ix < width)
+                {
+                    if (board[ix][y] != 1 && board[ix][y] != 5)
+                    {
+                        int g = curr.getG() + STRAIGHT_COST;
+                        int h = heuristic(ix,y);
+                        GraphNode neighbor = new GraphNode(ix, y, g + h, g, h, curr);
+                        boolean inside = false;
+                        Iterator<GraphNode> it = openNodes.iterator();
+                        while (it.hasNext())
+                        {
+                            GraphNode n = it.next();
+                            if (n.equals(neighbor))
+                            {
+                                if (n.getCost() > neighbor.getCost()) {
+                                    openNodes.remove(n);
+                                    openNodes.add(neighbor);
+                                }
+                                inside = true;
+                                break;
+                            }
+                        }
+                        if (!inside) {
+                            openNodes.add(neighbor);
+                            board[ix][y] = 4;
+                        }
+                    }
+                }
+                int iy = y + i;
+                if (iy > -1 && iy < height)
+                {
+                    if (board[x][iy] == 1 || board[x][iy] == 5) continue;
+                    int g = curr.getG() + STRAIGHT_COST;
+                    int h = heuristic(x,iy);
+                    GraphNode neighbor = new GraphNode(x, iy, g + h, g, h, curr);
+                    boolean inside = false;
+                    Iterator<GraphNode> it = openNodes.iterator();
+                    while (it.hasNext())
+                    {
+                        GraphNode n = it.next();
+                        if (n.equals(neighbor))
+                        {
+                            if (n.getCost() > neighbor.getCost()) {
+                                openNodes.remove(n);
+                                openNodes.add(neighbor);
+                            }
+                            inside = true;
+                            break;
+                        }
+                    }
+                    if (!inside) {
+                        openNodes.add(neighbor);
+                        board[x][iy] = 4;
+                    }
                 }
             }
+        }
         if (!openNodes.isEmpty())
         {
             GraphNode next = openNodes.peek();

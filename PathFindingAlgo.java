@@ -1,5 +1,6 @@
 public abstract class PathFindingAlgo {
     protected boolean reachedTarget;
+    protected boolean allowDiagonals;
     protected java.util.ArrayList<int[][]> history;
     protected int currState;
     protected java.util.ArrayList<Pair> colorKey;
@@ -12,6 +13,7 @@ public abstract class PathFindingAlgo {
         this.startCell = init.getStart();
         this.endCell = init.getEnd();
         this.reachedTarget = false;
+        this.allowDiagonals = true;
         this.width = init.getWidth();
         this.height = init.getHeight();
         this.currState = 0;
@@ -58,6 +60,10 @@ public abstract class PathFindingAlgo {
 
     public boolean reachedTarget() {
         return reachedTarget;
+    }
+
+    public void setAllowDiagonals(boolean aD) {
+        allowDiagonals = aD;
     }
 
     abstract void update();
