@@ -8,7 +8,7 @@ public class DFS extends PathFindingAlgo {
     {
         super(init);
         openNodes = new Stack<GraphNode>();
-        openNodes.add(new GraphNode(startCell[0], startCell[1], null));
+        openNodes.push(new GraphNode(startCell[0], startCell[1], null));
 
         colorKey.add(new Pair("OPEN", Color.yellow));
         colorKey.add(new Pair("CLOSED", Color.BLUE));
