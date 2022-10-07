@@ -25,7 +25,7 @@ public class PFPanel extends JPanel {
     private boolean paused;
     private Timer timer;
     private PFActionListener actionListener;
-    private int delay = 750;
+    private int delay = 5;
 
 
     public PFPanel(int pW, int pH, JButton pB)

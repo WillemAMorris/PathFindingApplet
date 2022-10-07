@@ -45,8 +45,8 @@ public class Dijkstra extends PathFindingAlgo {
             this.reachedTarget = true;
             return;
         }
-        for (int i = Math.max(x - 1, 0); i < Math.min(x + 2, width - 1); i++)
-            for (int j = Math.max(y - 1, 0); j < Math.min(y + 2, height - 1); j++)
+        for (int i = Math.max(x - 1, 0); i < Math.min(x + 2, width); i++)
+            for (int j = Math.max(y - 1, 0); j < Math.min(y + 2, height); j++)
             {
                 if (board[i][j] == 1 || board[i][j] == 5) continue; // neighbor is a wall or closed
                 int cost = curr.getCost();

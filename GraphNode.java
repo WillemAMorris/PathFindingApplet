@@ -16,6 +16,16 @@ public class GraphNode implements Comparable<GraphNode>{
         this.parent = null;
     }
 
+    GraphNode(int x, int y, GraphNode parent)
+    {
+        this.x = x;
+        this.y = y;
+        this.cost = Integer.MAX_VALUE;
+        this.g = 0;
+        this.heuristic = 0;
+        this.parent = parent;
+    }
+
     GraphNode(int x, int y, int cost, int g, int heuristic, GraphNode parent)
     {
         this.x = x;
